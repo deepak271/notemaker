@@ -14,7 +14,8 @@ const port = process.env.PORT || 8080;
 // app.use(express.urlencoded({ extended: true}));
 app.use(bodyparser.json());
 app.use(bodyparser.urlencoded({extended:false}));
-app.use('/',routes);
+app.use('/api/auth',routes);
+app.use('/api/note',routes)
 
 
 app.listen(port, () => {
