@@ -1,11 +1,18 @@
 import { useContext } from "react";
 import NoteContext from "../context/noteContext";
-
+import { Link } from "react-router-dom";
 
 function NoteItem(props) {
    let obj = useContext(NoteContext);
-  let editNote = obj.editNote;
+   let arr = obj.allNotes;
+   let setUdata = obj.setUdata;
   let deleNote = obj.deleNote;
+  let handleUpdate = (e)=>{
+    console.log("clicked")
+   let farr = arr.filter((el)=>el._id===props.id);
+   const {_id,title,tag,description}=farr[0];
+   setUdata({_id,title,tag,description})
+  }
   const handleDelete=(e)=>{
     deleNote(props.id);
   }
@@ -21,9 +28,9 @@ function NoteItem(props) {
             {props.data.description}
             </p>
           <div className="d-flex justify-content-center">
-            <button className="btn btn-info mx-3">
+            <Link className="btn btn-info mx-3" onClick={handleUpdate} to='/update'>
               <i className="fa fa-pencil"></i>
-            </button>
+            </Link>
             <button className="btn btn-danger" onClick={handleDelete}>
               <i className="fa fa-trash"></i>
             </button>

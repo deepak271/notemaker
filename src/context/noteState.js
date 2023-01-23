@@ -4,10 +4,9 @@ import NoteContext from "./noteContext";
 
 const NoteState = (props) => {
   //console.log("note:"+NoteContext)
-
-  let allData = [];
-
-  const [allNotes, setNotes] = useState(allData);
+  const isLogged = true;
+  const [udata, setUdata] = useState({_id:"", title: "", tag: "", description: "" });
+  const [allNotes, setNotes] = useState([]);
 
   const addNote = async (obj) => {
     // obj._id=Date.now();
@@ -27,20 +26,46 @@ const NoteState = (props) => {
     console.log(response.data);
     setNotes([response.data.result, ...allNotes]);
   };
+
   const fetchAllNotes = async () => {
-    let url = "http://localhost:5000/api/note/getAllNotes";
-    let resp = await fetch(url, {
+    if (isLogged) {
+      let url = "http://localhost:5000/api/note/getAllNotes";
+      let resp = await fetch(url, {
+        headers: {
+          "auth-token":
+            "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1X2lkIjoiNjNjYzVkM2VkODI1NjliNTI4ZjBkOWRlIiwiaWF0IjoxNjc0NDAwNTcyfQ.lWzauIub4qDSp3fNPHuLXNP8rhz7fDpwX5lbrcbRiDQ",
+        },
+      });
+      let data = await resp.json();
+      console.log(data);
+      setNotes(data);
+    } else {
+      isLogged = false;
+    }
+  };
+
+  const editNote = async () => {
+    let url = `http://localhost:5000/api/note/updateNote/${udata._id}`;
+    let edata = await axios.put(url,udata,{
       headers: {
         "auth-token":
           "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1X2lkIjoiNjNjYzVkM2VkODI1NjliNTI4ZjBkOWRlIiwiaWF0IjoxNjc0NDAwNTcyfQ.lWzauIub4qDSp3fNPHuLXNP8rhz7fDpwX5lbrcbRiDQ",
       },
-    });
-    let data = await resp.json();
-    console.log(data);
-    setNotes(data);
-  };
+    })
+    console.log(edata);
+    let newArr = allNotes;
+    for(let i=0;i<newArr.length;i++)
+    {
+      if(udata._id===newArr[i]._id)
+      {
+        newArr[i].title=edata.data.updated.title;
+        newArr[i].tag=edata.data.updated.tag;
+        newArr[i].description=edata.data.updated.description;
 
-  const editNote = () => {};
+      }
+    }
+    setNotes(newArr);
+  };
 
   const deleNote = async (id) => {
     console.log(id);
@@ -51,11 +76,21 @@ const NoteState = (props) => {
           "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1X2lkIjoiNjNjYzVkM2VkODI1NjliNTI4ZjBkOWRlIiwiaWF0IjoxNjc0NDAwNTcyfQ.lWzauIub4qDSp3fNPHuLXNP8rhz7fDpwX5lbrcbRiDQ",
       },
     });
-    console.log(del);
+    //console.log(del);
+    let filterArray = allNotes.filter((el) => el._id !== id);
+    setNotes(filterArray);
   };
   return (
     <NoteContext.Provider
-      value={{ allNotes, addNote, editNote, fetchAllNotes, deleNote }}
+      value={{
+        allNotes,
+        udata,
+        setUdata,
+        addNote,
+        editNote,
+        fetchAllNotes,
+        deleNote,
+      }}
     >
       {props.children}
     </NoteContext.Provider>

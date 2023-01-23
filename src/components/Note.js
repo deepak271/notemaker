@@ -7,11 +7,6 @@ export default function Note() {
    let obj = useContext(NoteContext);
    let arr = obj.allNotes;
    let addNote = obj.addNote;
-   let fetchAllNotes = obj.fetchAllNotes;
-   useEffect(() => {
-    //Runs only on the first render
-    fetchAllNotes();
-  }, []);
    const [note,setNote]=useState({title:"",tag:"",description:""});
 
    const handleChange=(e)=>{
